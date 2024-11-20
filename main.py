@@ -1,4 +1,5 @@
 import math
+import os
 import cv2
 import random as rd
 import numpy as np  
@@ -12,24 +13,49 @@ from depth import disparity_to_depth
 # Its all about resolution - Its a trade off between resolution and time of computation
 
 def main():
-    number = int(input("Please enter the dataset number (1/2/3) to use for calculating the depth map\n"))
-    img1 = cv2.imread(f"Dataset{number}/im0.png", 0)
-    img2 = cv2.imread(f"Dataset{number}/im1.png", 0)
+    ## Print the current working directory
+    #print("Current Working Directory:", os.getcwd())
+    #number = 1
+    ## Check if the images exist
+    #img1_path = "Depth-Estimation\im0.png"
+    #img2_path = "Depth-Estimation\im1.png"
+    #
+    #if not os.path.exists(img1_path):
+    #    print(f"Error: {img1_path} does not exist.")
+    #    return
+    #if not os.path.exists(img2_path):
+    #    print(f"Error: {img2_path} does not exist.")
+    #    return
+    #
+    #img1 = cv2.imread(img1_path, 0)
+    #img2 = cv2.imread(img2_path, 0)
+    #
+    #if img1 is None or img2 is None:
+    #    print(f"Error: Could not load images from {img1_path} and/or {img2_path}")
+    #    return
+    #
+    #width = int(img1.shape[1] * 0.3) # 0.3
+    #height = int(img1.shape[0] * 0.3) # 0.3
+    
+    #open beide camera's
+    img1 = cv2.VideoCapture(0, cv2.CAP_DSHOW)
+    img2 = cv2.VideoCapture(2, cv2.CAP_DSHOW)
 
-    width = int(img1.shape[1]* 0.3) # 0.3
-    height = int(img1.shape[0]* 0.3) # 0.3
+    frame_rate = 120 #zelf te kiezen (max is 120fps)
 
-    img1 = cv2.resize(img1, (width, height), interpolation = cv2.INTER_AREA)
-    # img1 = cv2.GaussianBlur(img1,(5,5),0)
-    img2 = cv2.resize(img2, (width, height), interpolation = cv2.INTER_AREA)
-    # img2 = cv2.GaussianBlur(img2,(5,5),0)
+    B = 9               #Afstand tussen de 2 camera's (cm)
+    f = 6               #De lens van de camera zijn brandpunt lengte (cm)
+    alpha = 49.99        #field of view van de camera (horizontale vlak [49.99 graden])
+
+    img1 = cv2.resize(img1, (width, height), interpolation=cv2.INTER_AREA)
+    img2 = cv2.resize(img2, (width, height), interpolation=cv2.INTER_AREA)
     
     #__________________Camera Parameters________________________________
     K11 = np.array([[5299.313,  0,   1263.818], 
-                [0,      5299.313, 977.763],
+                [0,       5299.313, 977.763],
                 [0,          0,       1   ]])
     K12 = np.array([[5299.313,   0,    1438.004],
-                [0,      5299.313,  977.763 ],
+                [0,       5299.313,  977.763 ],
                 [0,           0,      1     ]])
 
     K21 = np.array([[4396.869, 0, 1353.072],
@@ -134,4 +160,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-    
